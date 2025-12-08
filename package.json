@@ -39,18 +39,18 @@
     "swagger-ui-express": "^5.0.1",
     "@nestjs/cli": "^11.0.0",
     "typescript": "^5.7.3",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "@types/bcrypt": "^6.0.0",
+    "@types/express": "^5.0.0",
+    "@types/passport-jwt": "^4.0.1",
+    "@types/node": "^22.10.7"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.18.0",
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.0.1",
-    "@types/bcrypt": "^6.0.0",
-    "@types/express": "^5.0.0",
     "@types/jest": "^30.0.0",
-    "@types/node": "^22.10.7",
-    "@types/passport-jwt": "^4.0.1",
     "@types/supertest": "^6.0.2",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
