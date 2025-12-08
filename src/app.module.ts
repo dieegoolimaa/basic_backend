@@ -6,6 +6,7 @@ import { UsersModule } from './modules/users/users.module';
 import { CoursesModule } from './modules/courses/courses.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
 import { InvitesModule } from './modules/invites/invites.module';
+import { UploadsModule } from './modules/uploads/uploads.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { InvitesModule } from './modules/invites/invites.module';
     CoursesModule,
     ReviewsModule,
     InvitesModule,
+    UploadsModule,
   ],
   controllers: [],
   providers: [],

@@ -41,6 +41,7 @@ async function bootstrap() {
     .addTag('users', 'User management endpoints')
     .addTag('invites', 'Invite code management endpoints')
     .addTag('reviews', 'Course review endpoints')
+    .addTag('uploads', 'File upload endpoints (images and videos)')
     .addBearerAuth(
       {
         type: 'http',

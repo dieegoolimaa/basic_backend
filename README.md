@@ -131,6 +131,16 @@ A documentação Swagger está disponível em: `http://localhost:3000/api/docs`
 - `DELETE /reviews/:id` - Deletar avaliação 🔒
 - `GET /reviews/me` - Minhas avaliações 🔒
 
+#### Upload de Arquivos (`/api/uploads`)
+
+- `POST /uploads` - Upload de imagem ou vídeo (base64) 🔒
+- `GET /uploads/:id` - Recuperar arquivo por ID
+- `DELETE /uploads/:id` - Deletar arquivo 🔒
+
+**Limites:**
+- Imagens: 5MB máximo (JPEG, PNG, GIF, WebP)
+- Vídeos: 50MB máximo (MP4, WebM, OGG, MOV)
+
 🔒 = Requer autenticação JWT
 
 ## 🏗️ Estrutura do Projeto
@@ -154,6 +164,9 @@ src/
 │   │   ├── dto/
 │   │   └── schemas/
 │   ├── reviews/         # Avaliações de cursos
+│   │   ├── dto/
+│   │   └── schemas/
+│   ├── uploads/         # Upload de arquivos (base64)
 │   │   ├── dto/
 │   │   └── schemas/
 │   └── users/           # Gestão de usuários
@@ -226,14 +239,32 @@ npm run build
 
 ## 🌐 Deploy
 
-### Railway / Heroku / Render
+### Deploy Recomendado: Render.com
 
-1. Configure as variáveis de ambiente
-2. Configure MongoDB Atlas ou similar
-3. Execute o build
-4. Inicie com `npm run start:prod`
+**📋 Guia Completo:** Veja [DEPLOY.md](./DEPLOY.md) para instruções detalhadas
 
-### Docker
+**Resumo:**
+1. Configure MongoDB Atlas (tier gratuito)
+2. Crie Web Service no Render.com
+3. Conecte repositório GitHub
+4. Configure variáveis de ambiente
+5. Deploy automático
+
+**Build Command:** `npm install && npm run build`  
+**Start Command:** `npm run start:prod`
+
+### Variáveis de Ambiente (Produção)
+
+```env
+MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/db
+JWT_SECRET=seu-segredo-super-secreto
+JWT_EXPIRES_IN=7d
+NODE_ENV=production
+PORT=3000
+FRONTEND_URL=https://seu-frontend.vercel.app
+```
+
+### Docker (Opcional)
 
 ```dockerfile
 FROM node:18-alpine
@@ -246,6 +277,26 @@ EXPOSE 3000
 CMD ["npm", "run", "start:prod"]
 ```
 
+## 📤 Upload de Arquivos
+
+Sistema de upload com armazenamento em Base64 no MongoDB:
+
+**Vantagens:**
+- ✅ 100% gratuito (sem custos adicionais)
+- ✅ Sem configuração de serviços externos
+- ✅ Simples de implementar
+- ✅ Funciona em qualquer ambiente
+
+**Limitações:**
+- ⚠️ Imagens: máximo 5MB
+- ⚠️ Vídeos: máximo 50MB
+- ⚠️ Ideal para projetos pequenos/médios
+- ⚠️ Para projetos grandes, considere AWS S3, Cloudinary, etc.
+
+**Formatos Suportados:**
+- Imagens: JPEG, PNG, GIF, WebP
+- Vídeos: MP4, WebM, OGG, MOV
+
 ## 🔒 Segurança
 
 - Senhas hasheadas com bcrypt
@@ -254,6 +305,8 @@ CMD ["npm", "run", "start:prod"]
 - Validação de dados com class-validator
 - Guards para proteção de rotas
 - Exception filters para tratamento de erros
+- Limite de tamanho de upload
+- Validação de tipos MIME
 
 ## 📝 Melhorias Implementadas
 
