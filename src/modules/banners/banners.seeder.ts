@@ -5,7 +5,7 @@ import { Banner, BannerDocument } from './schemas/banner.schema';
 
 @Injectable()
 export class BannersSeeder implements OnModuleInit {
-    constructor(@InjectModel(Banner.name) private bannerModel: Model<BannerDocument>) {}
+    constructor(@InjectModel(Banner.name) private bannerModel: Model<BannerDocument>) { }
 
     async onModuleInit() {
         await this.seedBanners();

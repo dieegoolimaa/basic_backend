@@ -3,7 +3,7 @@ import { BannersService } from './banners.service';
 
 @Controller('home-content')
 export class BannersController {
-    constructor(private readonly bannersService: BannersService) {}
+    constructor(private readonly bannersService: BannersService) { }
 
     @Get()
     async findAll() {

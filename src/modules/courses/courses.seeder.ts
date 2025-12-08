@@ -84,7 +84,7 @@ export class CoursesSeeder implements OnModuleInit {
         for (const course of courses) {
             await this.courseModel.create(course);
         }
-        
+
         console.log('✅ Courses seeded successfully');
     }
 }

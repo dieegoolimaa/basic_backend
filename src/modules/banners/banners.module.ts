@@ -10,4 +10,4 @@ import { BannersSeeder } from './banners.seeder';
     controllers: [BannersController],
     providers: [BannersService, BannersSeeder],
 })
-export class BannersModule {}
+export class BannersModule { }
