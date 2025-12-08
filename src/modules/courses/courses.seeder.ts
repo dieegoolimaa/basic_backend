@@ -23,81 +23,57 @@ export class CoursesSeeder implements OnModuleInit {
         const courses = [
             {
                 title: 'Formação Completa em Nail Art',
+                subtitle: 'Domine as técnicas mais avançadas',
                 description: 'Aprenda do zero a criar designs incríveis de nail art com técnicas profissionais',
+                instructor: 'Ana Silva',
+                imageUrl: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=800',
                 thumbnailUrl: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=800',
-                level: 'Iniciante',
-                duration: '8 horas',
+                isActive: true,
                 modules: [
                     {
+                        id: 'mod_1',
                         title: 'Módulo 1: Fundamentos',
                         lessons: [
                             {
+                                id: 'les_1',
                                 title: 'Bem-vinda ao Curso',
                                 description: 'Introdução ao curso e materiais necessários',
                                 videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
                                 duration: '10:00',
-                                order: 1
+                                procedureSteps: [
+                                    { step: 1, description: 'Assista ao vídeo de introdução' },
+                                    { step: 2, description: 'Baixe a lista de materiais' }
+                                ]
                             },
                             {
+                                id: 'les_2',
                                 title: 'Preparação das Unhas',
                                 description: 'Como preparar as unhas antes da aplicação',
                                 videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
                                 duration: '15:30',
-                                order: 2
+                                procedureSteps: [
+                                    { step: 1, description: 'Higienização das mãos' },
+                                    { step: 2, description: 'Remoção de cutículas' },
+                                    { step: 3, description: 'Lixamento técnico' }
+                                ]
                             }
                         ]
                     },
                     {
+                        id: 'mod_2',
                         title: 'Módulo 2: Técnicas Básicas',
                         lessons: [
                             {
-                                title: 'Aplicação de Base',
-                                description: 'Técnicas corretas de aplicação de base',
+                                id: 'les_3',
+                                title: 'Esmaltação Perfeita',
+                                description: 'Segredos para uma esmaltação duradoura',
                                 videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
                                 duration: '20:00',
-                                order: 1
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                title: 'Alongamento de Unhas',
-                description: 'Domine as técnicas de alongamento com fibra de vidro e gel',
-                thumbnailUrl: 'https://images.unsplash.com/photo-1610992015732-2449b76344bc?w=800',
-                level: 'Intermediário',
-                duration: '6 horas',
-                modules: [
-                    {
-                        title: 'Módulo 1: Introdução ao Alongamento',
-                        lessons: [
-                            {
-                                title: 'Materiais e Ferramentas',
-                                description: 'Conhecendo os materiais necessários',
-                                videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-                                duration: '12:00',
-                                order: 1
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                title: 'Blindagem de Unhas',
-                description: 'Técnica de fortalecimento e proteção das unhas naturais',
-                thumbnailUrl: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800',
-                level: 'Iniciante',
-                duration: '4 horas',
-                modules: [
-                    {
-                        title: 'Módulo 1: Fundamentos da Blindagem',
-                        lessons: [
-                            {
-                                title: 'O que é Blindagem',
-                                description: 'Entendendo a técnica de blindagem',
-                                videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-                                duration: '8:00',
-                                order: 1
+                                procedureSteps: [
+                                    { step: 1, description: 'Base coat' },
+                                    { step: 2, description: 'Aplicação da cor' },
+                                    { step: 3, description: 'Top coat' }
+                                ]
                             }
                         ]
                     }
@@ -105,7 +81,10 @@ export class CoursesSeeder implements OnModuleInit {
             }
         ];
 
-        await this.courseModel.insertMany(courses);
-        console.log('✅ Sample courses created');
+        for (const course of courses) {
+            await this.courseModel.create(course);
+        }
+        
+        console.log('✅ Courses seeded successfully');
     }
 }

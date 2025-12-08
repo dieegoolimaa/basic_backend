@@ -7,6 +7,7 @@ import { CoursesModule } from './modules/courses/courses.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
 import { InvitesModule } from './modules/invites/invites.module';
 import { UploadsModule } from './modules/uploads/uploads.module';
+import { BannersModule } from './modules/banners/banners.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { UploadsModule } from './modules/uploads/uploads.module';
     ReviewsModule,
     InvitesModule,
     UploadsModule,
+    BannersModule,
   ],
   controllers: [],
   providers: [],

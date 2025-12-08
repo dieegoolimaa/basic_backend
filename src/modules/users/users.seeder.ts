@@ -12,6 +12,7 @@ export class UsersSeeder implements OnModuleInit {
 
     async onModuleInit() {
         await this.seedAdmin();
+        await this.seedStudent();
     }
 
     private async seedAdmin() {
@@ -35,5 +36,28 @@ export class UsersSeeder implements OnModuleInit {
 
         await admin.save();
         console.log('✅ Admin user created: admin@basic.com / admin123');
+    }
+
+    private async seedStudent() {
+        const studentEmail = 'student@basic.com';
+
+        const existingStudent = await this.userModel.findOne({ email: studentEmail }).exec();
+        if (existingStudent) {
+            console.log('✅ Student user already exists');
+            return;
+        }
+
+        const hashedPassword = await bcrypt.hash('student123', 10);
+
+        const student = new this.userModel({
+            name: 'Estudante Teste',
+            email: studentEmail,
+            password: hashedPassword,
+            role: UserRole.STUDENT,
+            isActive: true,
+        });
+
+        await student.save();
+        console.log('✅ Student user created: student@basic.com / student123');
     }
 }
