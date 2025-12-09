@@ -19,6 +19,30 @@ export class ProcedureStep {
 }
 
 @Schema()
+export class QuizQuestion {
+    @Prop()
+    id: string;
+
+    @Prop()
+    question: string;
+
+    @Prop([String])
+    options: string[];
+
+    @Prop()
+    correctOptionIndex: number;
+}
+
+@Schema()
+export class Quiz {
+    @Prop({ type: [QuizQuestion], default: [] })
+    questions: QuizQuestion[];
+
+    @Prop({ default: 70 })
+    minPassScore: number;
+}
+
+@Schema()
 export class Lesson {
     @Prop({ required: true })
     id: string;
@@ -28,6 +52,9 @@ export class Lesson {
 
     @Prop()
     description?: string;
+
+    @Prop()
+    contentType?: string;
 
     @Prop()
     videoUrl?: string;
@@ -40,6 +67,9 @@ export class Lesson {
 
     @Prop({ type: [ProcedureStep], default: [] })
     procedureSteps: ProcedureStep[];
+
+    @Prop({ type: Quiz })
+    quiz?: Quiz;
 
     @Prop()
     textContent?: string;

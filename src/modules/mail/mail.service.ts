@@ -3,77 +3,101 @@ import * as nodemailer from 'nodemailer';
 import { inviteEmailTemplate } from './templates/invite.template';
 
 export interface EmailOptions {
-    to: string;
-    subject: string;
-    html: string;
+  to: string;
+  subject: string;
+  html: string;
 }
 
 @Injectable()
 export class MailService {
-    private readonly logger = new Logger(MailService.name);
-    private transporter: nodemailer.Transporter;
+  private readonly logger = new Logger(MailService.name);
+  private transporter: nodemailer.Transporter;
+  private isMockMode = false;
 
-    constructor() {
-        this.transporter = nodemailer.createTransport({
-            host: process.env.SMTP_HOST || 'smtp.gmail.com',
-            port: parseInt(process.env.SMTP_PORT || '587'),
-            secure: process.env.SMTP_SECURE === 'true',
-            auth: {
-                user: process.env.SMTP_USER,
-                pass: process.env.SMTP_PASS,
-            },
-        });
+  constructor() {
+    if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+      this.isMockMode = true;
+      this.logger.warn('SMTP credentials not found. Running in MOCK mode. Emails will be logged to console.');
+      // Initialize transporter anyway to avoid null errors, but we won't use it in mock mode
+      this.transporter = nodemailer.createTransport({ jsonTransport: true });
+    } else {
+      this.transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST || 'smtp.gmail.com',
+        port: parseInt(process.env.SMTP_PORT || '587'),
+        secure: process.env.SMTP_SECURE === 'true',
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
+        },
+      });
+    }
+  }
+
+  async sendEmail(options: EmailOptions): Promise<boolean> {
+    if (this.isMockMode) {
+      this.logger.log('================ [MOCK EMAIL] ================');
+      this.logger.log(`TO: ${options.to}`);
+      this.logger.log(`SUBJECT: ${options.subject}`);
+      this.logger.log('CONTENT (HTML preview):');
+      this.logger.log(options.html.substring(0, 500) + '...'); // Log first 500 chars
+      this.logger.log('==============================================');
+      return true;
     }
 
-    async sendEmail(options: EmailOptions): Promise<boolean> {
-        try {
-            await this.transporter.sendMail({
-                from: `"Basic Studio" <${process.env.SMTP_USER || 'noreply@basicstudio.com'}>`,
-                to: options.to,
-                subject: options.subject,
-                html: options.html,
-            });
+    try {
+      await this.transporter.sendMail({
+        from: `"Basic Studio" <${process.env.SMTP_USER || 'noreply@basicstudio.com'}>`,
+        to: options.to,
+        subject: options.subject,
+        html: options.html,
+      });
 
-            this.logger.log(`Email sent to ${options.to}`);
-            return true;
-        } catch (error) {
-            this.logger.error(`Failed to send email to ${options.to}`, error);
-            return false;
-        }
+      this.logger.log(`Email sent to ${options.to}`);
+      return true;
+    } catch (error) {
+      this.logger.error(`Failed to send email to ${options.to}`, error);
+      return false;
+    }
+  }
+
+  async sendInviteEmail(
+    email: string,
+    inviteCode: string,
+    courseNames: string[],
+  ): Promise<boolean> {
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:4200';
+    const html = inviteEmailTemplate({
+      inviteCode,
+      courseNames,
+      registerUrl: `${frontendUrl}/cadastro?code=${inviteCode}`,
+      whatsappNumber: '+351937299329',
+      instagramHandle: '@basic.studio7',
+    });
+
+    // Log the full link in dev mode for easy testing
+    if (this.isMockMode) {
+      this.logger.log(`[MOCK INVITE LINK]: ${frontendUrl}/cadastro?code=${inviteCode}`);
     }
 
-    async sendInviteEmail(
-        email: string,
-        inviteCode: string,
-        courseNames: string[],
-    ): Promise<boolean> {
-        const html = inviteEmailTemplate({
-            inviteCode,
-            courseNames,
-            registerUrl: `${process.env.FRONTEND_URL || 'http://localhost:4200'}/cadastro?code=${inviteCode}`,
-            whatsappNumber: '+351937299329',
-            instagramHandle: '@basic.studio7',
-        });
+    return this.sendEmail({
+      to: email,
+      subject: '💅 Seu convite para Basic Studio chegou!',
+      html,
+    });
+  }
 
-        return this.sendEmail({
-            to: email,
-            subject: '💅 Seu convite para Basic Studio chegou!',
-            html,
-        });
-    }
+  async sendWelcomeEmail(email: string, userName: string): Promise<boolean> {
+    const html = this.getWelcomeEmailTemplate(userName);
 
-    async sendWelcomeEmail(email: string, userName: string): Promise<boolean> {
-        const html = this.getWelcomeEmailTemplate(userName);
+    return this.sendEmail({
+      to: email,
+      subject: '🎉 Bem-vinda ao Basic Studio!',
+      html,
+    });
+  }
 
-        return this.sendEmail({
-            to: email,
-            subject: '🎉 Bem-vinda ao Basic Studio!',
-            html,
-        });
-    }
-
-    private getWelcomeEmailTemplate(userName: string): string {
-        return `
+  private getWelcomeEmailTemplate(userName: string): string {
+    return `
       <!DOCTYPE html>
       <html>
       <head>
@@ -118,5 +142,5 @@ export class MailService {
       </body>
       </html>
     `;
-    }
+  }
 }

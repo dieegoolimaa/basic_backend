@@ -9,6 +9,7 @@ import { InvitesModule } from './modules/invites/invites.module';
 import { UploadsModule } from './modules/uploads/uploads.module';
 import { BannersModule } from './modules/banners/banners.module';
 import { MailModule } from './modules/mail/mail.module';
+import { SettingsModule } from './modules/settings/settings.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { MailModule } from './modules/mail/mail.module';
     UploadsModule,
     BannersModule,
     MailModule,
+    SettingsModule,
   ],
   controllers: [],
   providers: [],
