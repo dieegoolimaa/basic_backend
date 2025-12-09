@@ -1,16 +1,18 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, Inject, forwardRef } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Invite, InviteDocument, InviteStatus } from './schemas/invite.schema';
 import { CreateInviteDto } from './dto/invite.dto';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class InvitesService {
     constructor(
         @InjectModel(Invite.name) private inviteModel: Model<InviteDocument>,
+        private mailService: MailService,
     ) { }
 
-    async create(adminUserId: string, createInviteDto: CreateInviteDto): Promise<InviteDocument> {
+    async create(adminUserId: string, createInviteDto: CreateInviteDto, courseNames: string[] = []): Promise<InviteDocument> {
         const { email, courseIds } = createInviteDto;
 
         // Check if there's already a pending invite for this email
@@ -38,7 +40,17 @@ export class InvitesService {
             expiresAt,
         });
 
-        return invite.save();
+        const savedInvite = await invite.save();
+
+        // Send email with invite code
+        try {
+            await this.mailService.sendInviteEmail(email, code, courseNames);
+        } catch (error) {
+            console.error('Failed to send invite email:', error);
+            // Don't fail the invite creation if email fails
+        }
+
+        return savedInvite;
     }
 
     async findByCode(code: string): Promise<InviteDocument | null> {
@@ -110,14 +122,22 @@ export class InvitesService {
     }
 
     async resendInvite(code: string): Promise<{ success: boolean; message: string }> {
-        const invite = await this.inviteModel.findOne({ code, status: InviteStatus.PENDING }).exec();
+        const invite = await this.inviteModel
+            .findOne({ code, status: InviteStatus.PENDING })
+            .populate('courseIds', 'title')
+            .exec();
+
         if (!invite) throw new NotFoundException('Convite não encontrado ou já utilizado');
 
-        // TODO: Implement actual email sending
-        // For now, just return success
+        // Get course names
+        const courseNames = (invite.courseIds as any[]).map(c => c.title || 'Curso');
+
+        // Send email
+        const sent = await this.mailService.sendInviteEmail(invite.email, code, courseNames);
+
         return {
-            success: true,
-            message: `Convite reenviado para ${invite.email}`,
+            success: sent,
+            message: sent ? `Convite reenviado para ${invite.email}` : 'Falha ao enviar email',
         };
     }
 
