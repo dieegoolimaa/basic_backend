@@ -8,8 +8,17 @@ export class Banner {
     @Prop({ required: true })
     imageUrl: string;
 
+    @Prop()
+    title?: string;
+
+    @Prop()
+    subtitle?: string;
+
+    @Prop()
+    linkUrl?: string;
+
     @Prop({ default: true })
-    active: boolean;
+    isActive: boolean;
 
     @Prop({ default: 0 })
     order: number;

@@ -45,6 +45,36 @@ export class UsersController {
         return this.usersService.getProgress(req.user.userId);
     }
 
+    @Put('me')
+    @ApiOperation({ summary: 'Update my profile', description: 'Updates the authenticated user profile' })
+    @ApiResponse({ status: 200, description: 'Profile updated successfully' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    async updateMyProfile(@Request() req: any, @Body() updateData: any) {
+        return this.usersService.update(req.user.userId, updateData);
+    }
+
+    @Get(':id')
+    @UseGuards(AdminGuard)
+    @ApiOperation({ summary: 'Get user by ID (Admin)', description: 'Returns a specific user by their ID' })
+    @ApiResponse({ status: 200, description: 'User data' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'Forbidden - Admin access required' })
+    @ApiResponse({ status: 404, description: 'User not found' })
+    async getUserById(@Param('id') id: string) {
+        return this.usersService.findById(id);
+    }
+
+    @Put(':id')
+    @UseGuards(AdminGuard)
+    @ApiOperation({ summary: 'Update user (Admin)', description: 'Admin endpoint to update any user data' })
+    @ApiResponse({ status: 200, description: 'User updated successfully' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'Forbidden - Admin access required' })
+    @ApiResponse({ status: 404, description: 'User not found' })
+    async updateUser(@Param('id') id: string, @Body() updateData: any) {
+        return this.usersService.update(id, updateData);
+    }
+
     @Put(':id/courses')
     @UseGuards(AdminGuard)
     @ApiOperation({ summary: 'Update user courses (Admin)', description: 'Admin endpoint to update which courses a user has access to' })

@@ -22,6 +22,20 @@ export class UsersService {
         return this.userModel.findById(id).exec();
     }
 
+    async update(id: string, updateData: Partial<User>): Promise<UserDocument> {
+        // Remove sensitive fields that shouldn't be updated directly
+        const { password, role, enrolledCourses, completedLessons, courseProgress, ...safeData } = updateData as any;
+
+        const user = await this.userModel.findByIdAndUpdate(
+            id,
+            { $set: safeData },
+            { new: true }
+        ).exec();
+
+        if (!user) throw new NotFoundException('User not found');
+        return user;
+    }
+
     async findAllStudents(): Promise<UserDocument[]> {
         return this.userModel
             .find({ role: UserRole.STUDENT })
