@@ -46,8 +46,9 @@ export class MailService {
     }
 
     try {
+      const fromEmail = process.env.SMTP_FROM || process.env.SMTP_USER || 'noreply@basic.com';
       await this.transporter.sendMail({
-        from: `"Basic Studio" <${process.env.SMTP_USER || 'noreply@basicstudio.com'}>`,
+        from: `"Basic Studio" <${fromEmail}>`,
         to: options.to,
         subject: options.subject,
         html: options.html,
