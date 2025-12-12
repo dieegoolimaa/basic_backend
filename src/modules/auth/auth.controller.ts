@@ -33,4 +33,22 @@ export class AuthController {
     async validateInvite(@Query('code') code: string) {
         return this.authService.validateInviteCode(code);
     }
+
+    @Post('forgot-password')
+    @ApiOperation({ summary: 'Request password reset', description: 'Sends password reset email if user exists' })
+    @ApiResponse({ status: 200, description: 'Reset email sent (or silently ignored if not found)' })
+    async forgotPassword(@Body() body: { email: string }) {
+        await this.authService.requestPasswordReset(body.email);
+        return { message: 'Se o email existir, você receberá um link para redefinir sua senha.' };
+    }
+
+    @Post('reset-password')
+    @ApiOperation({ summary: 'Reset password with token', description: 'Changes password using reset token from email' })
+    @ApiResponse({ status: 200, description: 'Password successfully reset' })
+    @ApiResponse({ status: 400, description: 'Invalid or expired token' })
+    async resetPassword(@Body() body: { token: string; newPassword: string }) {
+        await this.authService.resetPassword(body.token, body.newPassword);
+        return { message: 'Senha redefinida com sucesso.' };
+    }
 }
+

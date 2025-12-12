@@ -40,6 +40,12 @@ export class User {
     @Prop({ default: false })
     mustChangePassword: boolean;
 
+    @Prop()
+    passwordResetToken?: string;
+
+    @Prop()
+    passwordResetExpires?: Date;
+
     @Prop({ type: [{ type: Types.ObjectId, ref: 'Course' }] })
     enrolledCourses: Types.ObjectId[];
 

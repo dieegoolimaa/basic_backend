@@ -7,6 +7,7 @@ import { AuthController } from './auth.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { UsersModule } from '../users/users.module';
 import { InvitesModule } from '../invites/invites.module';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
     imports: [
@@ -21,9 +22,11 @@ import { InvitesModule } from '../invites/invites.module';
         }),
         UsersModule,
         forwardRef(() => InvitesModule),
+        MailModule,
     ],
     controllers: [AuthController],
     providers: [AuthService, JwtStrategy],
     exports: [AuthService, JwtModule],
 })
 export class AuthModule { }
+

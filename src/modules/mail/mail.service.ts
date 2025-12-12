@@ -148,7 +148,7 @@ export class MailService {
                 Prepare-se para aprender técnicas incríveis e elevar suas habilidades!
               </p>
               <div style="text-align: center; margin: 30px 0;">
-                <a href="${process.env.FRONTEND_URL || 'http://localhost:4200'}/meus-cursos" 
+                <a href="${process.env.FRONTEND_URL}/meus-cursos" 
                    style="display: inline-block; padding: 15px 30px; background: linear-gradient(135deg, #d4a5a5 0%, #8b6b8f 100%); color: #ffffff; text-decoration: none; border-radius: 25px; font-weight: 600;">
                   Acessar Meus Cursos
                 </a>
@@ -170,4 +170,75 @@ export class MailService {
       </html>
     `;
   }
+
+  async sendPasswordResetEmail(
+    email: string,
+    name: string,
+    token: string,
+  ): Promise<boolean> {
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:4200';
+    const resetUrl = `${frontendUrl}/redefinir-senha?token=${token}`;
+
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+      </head>
+      <body style="margin: 0; padding: 0; font-family: 'Inter', Arial, sans-serif; background-color: #fdfbf9;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
+          <tr>
+            <td style="padding: 40px 30px; background: linear-gradient(135deg, #d4a5a5 0%, #8b6b8f 100%); text-align: center;">
+              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">basic.</h1>
+              <p style="margin: 10px 0 0; color: rgba(255,255,255,0.9); font-size: 14px;">Nail Art Academy</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 40px 30px;">
+              <h2 style="margin: 0 0 20px; color: #232222; font-size: 24px; font-weight: 600;">Recuperação de Senha</h2>
+              <p style="margin: 0 0 20px; color: #666; font-size: 16px; line-height: 1.6;">
+                Olá <strong>${name}</strong>,
+              </p>
+              <p style="margin: 0 0 20px; color: #666; font-size: 16px; line-height: 1.6;">
+                Recebemos sua solicitação para redefinir a senha da sua conta. Clique no botão abaixo para criar uma nova senha:
+              </p>
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="${resetUrl}" 
+                   style="display: inline-block; padding: 15px 35px; background: #232222; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                  Redefinir Minha Senha
+                </a>
+              </div>
+              <p style="margin: 0 0 20px; color: #999; font-size: 14px; line-height: 1.6;">
+                Este link é válido por <strong>1 hora</strong>. Se você não solicitou a redefinição de senha, ignore este email.
+              </p>
+              <p style="margin: 0; color: #999; font-size: 13px; line-height: 1.6; border-top: 1px solid #eee; padding-top: 20px;">
+                Se o botão não funcionar, copie e cole este link no seu navegador:<br>
+                <a href="${resetUrl}" style="color: #d4a5a5; word-break: break-all;">${resetUrl}</a>
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 30px; background-color: #f8f5f7; text-align: center;">
+              <p style="margin: 0; color: #666; font-size: 12px;">
+                © ${new Date().getFullYear()} Basic Studio. Todos os direitos reservados.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>
+    `;
+
+    if (this.isMockMode) {
+      this.logger.log(`[MOCK] Password reset link: ${resetUrl}`);
+    }
+
+    return this.sendEmail({
+      to: email,
+      subject: '🔐 Redefinição de Senha - Basic Studio',
+      html,
+    });
+  }
 }
+

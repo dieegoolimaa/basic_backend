@@ -2,9 +2,11 @@ import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { InvitesService } from '../invites/invites.service';
+import { MailService } from '../mail/mail.service';
 import { RegisterDto, LoginDto } from './dto/auth.dto';
 import { UserRole } from '../users/schemas/user.schema';
 import * as bcrypt from 'bcrypt';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class AuthService {
@@ -12,6 +14,7 @@ export class AuthService {
         private usersService: UsersService,
         private invitesService: InvitesService,
         private jwtService: JwtService,
+        private mailService: MailService,
     ) { }
 
     async register(registerDto: RegisterDto) {
@@ -93,8 +96,55 @@ export class AuthService {
         };
     }
 
+    async requestPasswordReset(email: string): Promise<void> {
+        const user = await this.usersService.findByEmail(email);
+
+        // Silently return if user not found (prevent email enumeration)
+        if (!user) return;
+
+        // Generate reset token
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        const resetExpires = new Date(Date.now() + 3600000); // 1 hour
+
+        // Save token to user
+        await this.usersService.setPasswordResetToken(
+            user._id.toString(),
+            resetToken,
+            resetExpires
+        );
+
+        // Send email
+        await this.mailService.sendPasswordResetEmail(
+            user.email,
+            user.name,
+            resetToken
+        );
+    }
+
+    async resetPassword(token: string, newPassword: string): Promise<void> {
+        const user = await this.usersService.findByResetToken(token);
+
+        if (!user) {
+            throw new BadRequestException('Token inválido ou expirado');
+        }
+
+        if (user.passwordResetExpires && user.passwordResetExpires < new Date()) {
+            throw new BadRequestException('Token expirado. Solicite um novo link.');
+        }
+
+        // Hash new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // Update password and clear reset token
+        await this.usersService.updatePasswordAndClearToken(
+            user._id.toString(),
+            hashedPassword
+        );
+    }
+
     private sanitizeUser(user: any) {
-        const { password, ...result } = user.toObject();
+        const { password, passwordResetToken, passwordResetExpires, ...result } = user.toObject();
         return result;
     }
 }
+

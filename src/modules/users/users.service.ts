@@ -171,4 +171,28 @@ export class UsersService {
             courseProgress: Object.fromEntries(user.courseProgress),
         };
     }
+
+    async setPasswordResetToken(userId: string, token: string, expires: Date): Promise<void> {
+        await this.userModel.findByIdAndUpdate(userId, {
+            passwordResetToken: token,
+            passwordResetExpires: expires,
+        }).exec();
+    }
+
+    async findByResetToken(token: string): Promise<UserDocument | null> {
+        return this.userModel.findOne({
+            passwordResetToken: token,
+            passwordResetExpires: { $gt: new Date() },
+        }).exec();
+    }
+
+    async updatePasswordAndClearToken(userId: string, hashedPassword: string): Promise<void> {
+        await this.userModel.findByIdAndUpdate(userId, {
+            password: hashedPassword,
+            passwordResetToken: null,
+            passwordResetExpires: null,
+            mustChangePassword: false,
+        }).exec();
+    }
 }
+
