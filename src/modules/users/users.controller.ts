@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Put, Body, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Param, Put, Body, UseGuards, Request, BadRequestException } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -10,6 +10,38 @@ import { AdminGuard } from '../../common/guards/admin.guard';
 @ApiBearerAuth('JWT-auth')
 export class UsersController {
     constructor(private readonly usersService: UsersService) { }
+
+    // ===== ADMIN MANAGEMENT =====
+    @Get('admins')
+    @UseGuards(AdminGuard)
+    @ApiOperation({ summary: 'Get all admins', description: 'Returns list of all admin users' })
+    @ApiResponse({ status: 200, description: 'List of admins' })
+    async getAllAdmins() {
+        return this.usersService.findAllAdmins();
+    }
+
+    @Post('admins')
+    @UseGuards(AdminGuard)
+    @ApiOperation({ summary: 'Create admin user', description: 'Creates a new admin user' })
+    @ApiResponse({ status: 201, description: 'Admin created successfully' })
+    @ApiResponse({ status: 400, description: 'Bad request - email already exists' })
+    async createAdmin(@Body() adminData: { name: string; email: string; password: string }) {
+        // Check if email already exists
+        const existing = await this.usersService.findByEmail(adminData.email);
+        if (existing) {
+            throw new BadRequestException('Email já está em uso');
+        }
+        return this.usersService.createAdmin(adminData);
+    }
+
+    @Delete(':id')
+    @UseGuards(AdminGuard)
+    @ApiOperation({ summary: 'Delete user', description: 'Permanently deletes a user' })
+    @ApiResponse({ status: 200, description: 'User deleted' })
+    async deleteUser(@Param('id') id: string) {
+        await this.usersService.deleteUser(id);
+        return { message: 'User deleted successfully' };
+    }
 
     @Get('students')
     @UseGuards(AdminGuard)

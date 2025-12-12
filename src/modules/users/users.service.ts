@@ -43,6 +43,32 @@ export class UsersService {
             .exec();
     }
 
+    async findAllAdmins(): Promise<UserDocument[]> {
+        return this.userModel
+            .find({ role: UserRole.ADMIN })
+            .select('-password')
+            .exec();
+    }
+
+    async createAdmin(adminData: { name: string; email: string; password: string }): Promise<UserDocument> {
+        const bcrypt = await import('bcrypt');
+        const hashedPassword = await bcrypt.hash(adminData.password, 10);
+
+        const admin = new this.userModel({
+            name: adminData.name,
+            email: adminData.email.toLowerCase(),
+            password: hashedPassword,
+            role: UserRole.ADMIN,
+            isActive: true,
+        });
+        return admin.save();
+    }
+
+    async deleteUser(id: string): Promise<void> {
+        const result = await this.userModel.findByIdAndDelete(id).exec();
+        if (!result) throw new NotFoundException('User not found');
+    }
+
     async enrollInCourses(userId: string, courseIds: string[]): Promise<UserDocument> {
         const user = await this.userModel.findById(userId);
         if (!user) throw new NotFoundException('User not found');
