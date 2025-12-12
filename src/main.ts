@@ -33,8 +33,10 @@ async function bootstrap() {
     forbidNonWhitelisted: true,
   }));
 
-  // Global prefix
-  app.setGlobalPrefix('api');
+  // Global prefix (exclude root health check)
+  app.setGlobalPrefix('api', {
+    exclude: ['', 'health'],
+  });
 
   // Swagger documentation
   const config = new DocumentBuilder()
