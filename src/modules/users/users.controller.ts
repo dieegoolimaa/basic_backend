@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Param, Put, Body, UseGuards, Request, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Param, Put, Body, UseGuards, Request, BadRequestException, Logger } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { MailService } from '../mail/mail.service';
@@ -10,6 +10,8 @@ import { AdminGuard } from '../../common/guards/admin.guard';
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth('JWT-auth')
 export class UsersController {
+    private readonly logger = new Logger(UsersController.name);
+
     constructor(
         private readonly usersService: UsersService,
         private readonly mailService: MailService,
@@ -43,7 +45,7 @@ export class UsersController {
         try {
             await this.mailService.sendAdminWelcomeEmail(admin.email, admin.name, generatedPassword);
         } catch (error) {
-            console.error('Failed to send admin welcome email:', error);
+            this.logger.error('Failed to send admin welcome email', error);
             // Don't fail the creation if email fails, admin can request password reset
         }
 

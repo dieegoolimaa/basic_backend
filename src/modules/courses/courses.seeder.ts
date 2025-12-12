@@ -1,10 +1,12 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Course, CourseDocument } from './schemas/course.schema';
 
 @Injectable()
 export class CoursesSeeder implements OnModuleInit {
+    private readonly logger = new Logger(CoursesSeeder.name);
+
     constructor(
         @InjectModel(Course.name) private courseModel: Model<CourseDocument>,
     ) { }
@@ -16,7 +18,7 @@ export class CoursesSeeder implements OnModuleInit {
     private async seedCourses() {
         const count = await this.courseModel.countDocuments().exec();
         if (count > 0) {
-            console.log('✅ Courses already exist');
+            this.logger.log('Courses already exist');
             return;
         }
 
@@ -85,6 +87,6 @@ export class CoursesSeeder implements OnModuleInit {
             await this.courseModel.create(course);
         }
 
-        console.log('✅ Courses seeded successfully');
+        this.logger.log('Courses seeded successfully');
     }
 }

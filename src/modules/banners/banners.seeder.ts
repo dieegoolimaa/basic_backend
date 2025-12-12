@@ -1,10 +1,12 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Banner, BannerDocument } from './schemas/banner.schema';
 
 @Injectable()
 export class BannersSeeder implements OnModuleInit {
+    private readonly logger = new Logger(BannersSeeder.name);
+
     constructor(@InjectModel(Banner.name) private bannerModel: Model<BannerDocument>) { }
 
     async onModuleInit() {
@@ -40,6 +42,6 @@ export class BannersSeeder implements OnModuleInit {
         ];
 
         await this.bannerModel.insertMany(banners);
-        console.log('✅ Banners seeded');
+        this.logger.log('Banners seeded');
     }
 }

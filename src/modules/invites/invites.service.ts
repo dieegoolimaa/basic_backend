@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException, Inject, forwardRef } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, Inject, forwardRef, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Invite, InviteDocument, InviteStatus } from './schemas/invite.schema';
@@ -7,6 +7,8 @@ import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class InvitesService {
+    private readonly logger = new Logger(InvitesService.name);
+
     constructor(
         @InjectModel(Invite.name) private inviteModel: Model<InviteDocument>,
         private mailService: MailService,
@@ -46,7 +48,7 @@ export class InvitesService {
         try {
             await this.mailService.sendInviteEmail(email, code, courseNames);
         } catch (error) {
-            console.error('Failed to send invite email:', error);
+            this.logger.error('Failed to send invite email', error);
             // Don't fail the invite creation if email fails
         }
 

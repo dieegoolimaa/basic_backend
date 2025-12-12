@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument, UserRole } from './schemas/user.schema';
@@ -6,6 +6,8 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersSeeder implements OnModuleInit {
+    private readonly logger = new Logger(UsersSeeder.name);
+
     constructor(
         @InjectModel(User.name) private userModel: Model<UserDocument>,
     ) { }
@@ -20,7 +22,7 @@ export class UsersSeeder implements OnModuleInit {
 
         const existingAdmin = await this.userModel.findOne({ email: adminEmail }).exec();
         if (existingAdmin) {
-            console.log('✅ Admin user already exists');
+            this.logger.log('Admin user already exists');
             return;
         }
 
@@ -35,7 +37,7 @@ export class UsersSeeder implements OnModuleInit {
         });
 
         await admin.save();
-        console.log('✅ Admin user created: admin@basic.com / admin123');
+        this.logger.log('Admin user created: admin@basic.com');
     }
 
     private async seedStudent() {
@@ -43,7 +45,7 @@ export class UsersSeeder implements OnModuleInit {
 
         const existingStudent = await this.userModel.findOne({ email: studentEmail }).exec();
         if (existingStudent) {
-            console.log('✅ Student user already exists');
+            this.logger.log('Student user already exists');
             return;
         }
 
@@ -58,6 +60,6 @@ export class UsersSeeder implements OnModuleInit {
         });
 
         await student.save();
-        console.log('✅ Student user created: student@basic.com / student123');
+        this.logger.log('Student user created: student@basic.com');
     }
 }
