@@ -13,9 +13,16 @@ async function bootstrap() {
   app.use(bodyParser.json({ limit: '50mb' }));
   app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
-  // Enable CORS for frontend
+  // Enable CORS for frontend (development + production)
+  const allowedOrigins = [
+    'http://localhost:4200',
+    'http://localhost:3000',
+    'https://basic-frontend-seven.vercel.app',
+    process.env.FRONTEND_URL,
+  ].filter(Boolean); // Remove undefined values
+
   app.enableCors({
-    origin: ['http://localhost:4200', 'http://localhost:3000'],
+    origin: allowedOrigins,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     credentials: true,
   });
