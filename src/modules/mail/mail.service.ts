@@ -148,7 +148,7 @@ export class MailService {
                 Prepare-se para aprender técnicas incríveis e elevar suas habilidades!
               </p>
               <div style="text-align: center; margin: 30px 0;">
-                <a href="${process.env.FRONTEND_URL}/meus-cursos" 
+                <a href="${process.env.FRONTEND_URL || 'http://localhost:4200'}/meus-cursos" 
                    style="display: inline-block; padding: 15px 30px; background: linear-gradient(135deg, #d4a5a5 0%, #8b6b8f 100%); color: #ffffff; text-decoration: none; border-radius: 25px; font-weight: 600;">
                   Acessar Meus Cursos
                 </a>

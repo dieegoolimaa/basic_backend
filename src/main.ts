@@ -33,11 +33,11 @@ async function bootstrap() {
   // Global logging interceptor
   app.useGlobalInterceptors(new LoggingInterceptor());
 
-  // Global validation pipe
+  // Global validation pipe (whitelist strips unknown fields silently)
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,
     transform: true,
-    forbidNonWhitelisted: true,
+    forbidNonWhitelisted: false, // Allow extra fields (they get stripped by whitelist)
   }));
 
   // Global prefix (exclude root health check)
