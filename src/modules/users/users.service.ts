@@ -84,9 +84,21 @@ export class UsersService {
             password: hashedPassword,
             role: UserRole.ADMIN,
             isActive: true,
+            mustChangePassword: true, // Force password change on first login
         });
         const savedAdmin = await admin.save();
         return { admin: savedAdmin, generatedPassword };
+    }
+
+    async changePassword(userId: string, newPassword: string): Promise<UserDocument> {
+        const bcrypt = await import('bcrypt');
+        const user = await this.userModel.findById(userId);
+        if (!user) throw new NotFoundException('User not found');
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedPassword;
+        user.mustChangePassword = false; // Clear the flag after password change
+        return user.save();
     }
 
     async deleteUser(id: string): Promise<void> {

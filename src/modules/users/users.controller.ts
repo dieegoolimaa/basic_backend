@@ -50,6 +50,22 @@ export class UsersController {
         return admin;
     }
 
+    @Post('change-password')
+    @ApiOperation({ summary: 'Change password', description: 'Allows user to change their password (used for first-login flow)' })
+    @ApiResponse({ status: 200, description: 'Password changed successfully' })
+    @ApiResponse({ status: 400, description: 'Invalid password' })
+    async changePassword(
+        @Request() req: { user: { userId: string } },
+        @Body() body: { newPassword: string }
+    ) {
+        if (!body.newPassword || body.newPassword.length < 6) {
+            throw new BadRequestException('A senha deve ter no mínimo 6 caracteres');
+        }
+
+        await this.usersService.changePassword(req.user.userId, body.newPassword);
+        return { message: 'Senha alterada com sucesso' };
+    }
+
     @Delete(':id')
     @UseGuards(AdminGuard)
     @ApiOperation({ summary: 'Delete user', description: 'Permanently deletes a user' })

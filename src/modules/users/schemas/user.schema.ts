@@ -37,6 +37,9 @@ export class User {
     @Prop({ default: true })
     isActive: boolean;
 
+    @Prop({ default: false })
+    mustChangePassword: boolean;
+
     @Prop({ type: [{ type: Types.ObjectId, ref: 'Course' }] })
     enrolledCourses: Types.ObjectId[];
 
