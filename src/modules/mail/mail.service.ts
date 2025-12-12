@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { inviteEmailTemplate } from './templates/invite.template';
+import { adminWelcomeEmailTemplate } from './templates/admin-welcome.template';
 
 export interface EmailOptions {
   to: string;
@@ -82,6 +83,31 @@ export class MailService {
     return this.sendEmail({
       to: email,
       subject: '💅 Seu convite para Basic Studio chegou!',
+      html,
+    });
+  }
+
+  async sendAdminWelcomeEmail(
+    email: string,
+    name: string,
+    password: string,
+  ): Promise<boolean> {
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:4200';
+    const html = adminWelcomeEmailTemplate({
+      name,
+      email,
+      password,
+      loginUrl: `${frontendUrl}/login`,
+    });
+
+    // Log the password in dev mode for easy testing
+    if (this.isMockMode) {
+      this.logger.log(`[MOCK ADMIN CREDENTIALS]: Email: ${email} | Password: ${password}`);
+    }
+
+    return this.sendEmail({
+      to: email,
+      subject: '🔐 Sua conta de administrador - Basic Studio',
       html,
     });
   }

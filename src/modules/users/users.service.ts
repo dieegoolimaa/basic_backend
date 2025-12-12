@@ -50,9 +50,33 @@ export class UsersService {
             .exec();
     }
 
-    async createAdmin(adminData: { name: string; email: string; password: string }): Promise<UserDocument> {
+    private generateSecurePassword(length: number = 12): string {
+        const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+        const numbers = '0123456789';
+        const special = '@#$%&*!';
+        const allChars = uppercase + lowercase + numbers + special;
+
+        let password = '';
+        // Ensure at least one of each type
+        password += uppercase[Math.floor(Math.random() * uppercase.length)];
+        password += lowercase[Math.floor(Math.random() * lowercase.length)];
+        password += numbers[Math.floor(Math.random() * numbers.length)];
+        password += special[Math.floor(Math.random() * special.length)];
+
+        // Fill the rest randomly
+        for (let i = password.length; i < length; i++) {
+            password += allChars[Math.floor(Math.random() * allChars.length)];
+        }
+
+        // Shuffle the password
+        return password.split('').sort(() => Math.random() - 0.5).join('');
+    }
+
+    async createAdmin(adminData: { name: string; email: string }): Promise<{ admin: UserDocument; generatedPassword: string }> {
         const bcrypt = await import('bcrypt');
-        const hashedPassword = await bcrypt.hash(adminData.password, 10);
+        const generatedPassword = this.generateSecurePassword();
+        const hashedPassword = await bcrypt.hash(generatedPassword, 10);
 
         const admin = new this.userModel({
             name: adminData.name,
@@ -61,7 +85,8 @@ export class UsersService {
             role: UserRole.ADMIN,
             isActive: true,
         });
-        return admin.save();
+        const savedAdmin = await admin.save();
+        return { admin: savedAdmin, generatedPassword };
     }
 
     async deleteUser(id: string): Promise<void> {

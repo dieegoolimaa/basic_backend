@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Delete, Param, Put, Body, UseGuards, Request, BadRequestException } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { UsersService } from './users.service';
+import { MailService } from '../mail/mail.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AdminGuard } from '../../common/guards/admin.guard';
 
@@ -9,7 +10,10 @@ import { AdminGuard } from '../../common/guards/admin.guard';
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth('JWT-auth')
 export class UsersController {
-    constructor(private readonly usersService: UsersService) { }
+    constructor(
+        private readonly usersService: UsersService,
+        private readonly mailService: MailService,
+    ) { }
 
     // ===== ADMIN MANAGEMENT =====
     @Get('admins')
@@ -22,16 +26,28 @@ export class UsersController {
 
     @Post('admins')
     @UseGuards(AdminGuard)
-    @ApiOperation({ summary: 'Create admin user', description: 'Creates a new admin user' })
+    @ApiOperation({ summary: 'Create admin user', description: 'Creates a new admin user with auto-generated password sent via email' })
     @ApiResponse({ status: 201, description: 'Admin created successfully' })
     @ApiResponse({ status: 400, description: 'Bad request - email already exists' })
-    async createAdmin(@Body() adminData: { name: string; email: string; password: string }) {
+    async createAdmin(@Body() adminData: { name: string; email: string }) {
         // Check if email already exists
         const existing = await this.usersService.findByEmail(adminData.email);
         if (existing) {
             throw new BadRequestException('Email já está em uso');
         }
-        return this.usersService.createAdmin(adminData);
+
+        // Create admin with auto-generated password
+        const { admin, generatedPassword } = await this.usersService.createAdmin(adminData);
+
+        // Send welcome email with credentials
+        try {
+            await this.mailService.sendAdminWelcomeEmail(admin.email, admin.name, generatedPassword);
+        } catch (error) {
+            console.error('Failed to send admin welcome email:', error);
+            // Don't fail the creation if email fails, admin can request password reset
+        }
+
+        return admin;
     }
 
     @Delete(':id')
