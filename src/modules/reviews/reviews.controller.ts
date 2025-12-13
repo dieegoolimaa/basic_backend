@@ -2,6 +2,7 @@ import { Controller, Get, Post, Put, Delete, Body, Param, Request, UseGuards } f
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { ReviewsService } from './reviews.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { AdminGuard } from '../auth/guards/admin.guard';
 import { CreateReviewDto, UpdateReviewDto } from './dto/review.dto';
 
 @ApiTags('reviews')
@@ -82,4 +83,16 @@ export class ReviewsController {
     async getMyReviewForCourse(@Request() req: any, @Param('courseId') courseId: string) {
         return this.reviewsService.getUserReviewForCourse(req.user.userId, courseId);
     }
+
+    @Get('admin/all')
+    @UseGuards(JwtAuthGuard, AdminGuard)
+    @ApiBearerAuth('JWT-auth')
+    @ApiOperation({ summary: 'Get all reviews (Admin)', description: 'Returns all reviews with user and course info for admin dashboard' })
+    @ApiResponse({ status: 200, description: 'List of all reviews' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'Forbidden - Admin access required' })
+    async getAllReviews() {
+        return this.reviewsService.findAllWithDetails();
+    }
 }
+

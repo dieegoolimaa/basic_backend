@@ -119,8 +119,18 @@ export class ReviewsService {
         return { averageRating, totalReviews, distribution };
     }
 
+    async findAllWithDetails(): Promise<any[]> {
+        return this.reviewModel
+            .find({ isActive: true })
+            .populate('userId', 'name email')
+            .populate('courseId', 'title thumbnailUrl')
+            .sort({ createdAt: -1 })
+            .exec();
+    }
+
     private async updateCourseRating(courseId: string): Promise<void> {
         const stats = await this.getCourseStats(courseId);
         await this.coursesService.updateRating(courseId, stats.averageRating, stats.totalReviews);
     }
 }
+
