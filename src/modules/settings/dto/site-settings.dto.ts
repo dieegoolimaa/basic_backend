@@ -1,6 +1,10 @@
 import { IsString, IsOptional } from 'class-validator';
 
 export class UpdateSiteSettingsDto {
+    @IsString()
+    @IsOptional()
+    welcomeImageUrl?: string;
+
     // About Section
     @IsString()
     @IsOptional()
@@ -39,4 +43,41 @@ export class UpdateSiteSettingsDto {
     @IsString()
     @IsOptional()
     founderName?: string;
+
+    // Courses Section
+    @IsString()
+    @IsOptional()
+    coursesTag?: string;
+
+    @IsString()
+    @IsOptional()
+    coursesTitle?: string;
+
+    @IsString()
+    @IsOptional()
+    carouselButtonText?: string;
+
+    // Philosophy Section
+    @IsString()
+    @IsOptional()
+    philosophyTitle1?: string;
+    @IsString()
+    @IsOptional()
+    philosophyDesc1?: string;
+
+    @IsString()
+    @IsOptional()
+    philosophyTitle2?: string;
+    @IsString()
+    @IsOptional()
+    philosophyDesc2?: string;
+
+    @IsString()
+    @IsOptional()
+    philosophyTitle3?: string;
+    @IsString()
+    @IsOptional()
+    philosophyDesc3?: string;
+
+
 }

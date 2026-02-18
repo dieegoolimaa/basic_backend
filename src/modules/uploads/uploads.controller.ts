@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Delete, Body, Param, UseGuards, Request } from '@nestjs/common';
+import { Controller, Post, Get, Delete, Body, Param, UseGuards, Request, Response } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { UploadsService } from './uploads.service';
 import { UploadFileDto } from './dto/upload.dto';
@@ -31,8 +31,10 @@ export class UploadsController {
     })
     @ApiResponse({ status: 200, description: 'File retrieved successfully' })
     @ApiResponse({ status: 404, description: 'File not found' })
-    async getFile(@Param('id') id: string) {
-        return this.uploadsService.getFile(id);
+    async getFile(@Param('id') id: string, @Response() res: any) {
+        const fileData = await this.uploadsService.getFileBuffer(id);
+        res.set('Content-Type', fileData.mimeType);
+        return res.send(fileData.buffer);
     }
 
     @Delete(':id')

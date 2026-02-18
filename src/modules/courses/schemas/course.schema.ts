@@ -93,6 +93,15 @@ export class Module {
     lessons: Lesson[];
 }
 
+@Schema()
+export class Benefit {
+    @Prop({ required: true })
+    title: string;
+
+    @Prop({ required: true })
+    description: string;
+}
+
 @Schema({ timestamps: true })
 export class Course {
     @Prop({ required: true })
@@ -115,6 +124,9 @@ export class Course {
 
     @Prop({ type: [Module], default: [] })
     modules: Module[];
+
+    @Prop({ type: [Benefit], default: [] })
+    benefits: Benefit[];
 
     @Prop({ default: true })
     isActive: boolean;

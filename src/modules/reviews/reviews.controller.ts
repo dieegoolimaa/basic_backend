@@ -2,7 +2,7 @@ import { Controller, Get, Post, Put, Delete, Body, Param, Request, UseGuards } f
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { ReviewsService } from './reviews.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { AdminGuard } from '../auth/guards/admin.guard';
+import { AdminGuard } from '../../common/guards/admin.guard';
 import { CreateReviewDto, UpdateReviewDto } from './dto/review.dto';
 
 @ApiTags('reviews')

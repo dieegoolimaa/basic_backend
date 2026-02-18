@@ -85,6 +85,18 @@ export class UploadsService {
         };
     }
 
+    async getFileBuffer(id: string) {
+        const upload = await this.uploadModel.findById(id);
+        if (!upload) {
+            throw new BadRequestException('Arquivo não encontrado');
+        }
+
+        return {
+            buffer: Buffer.from(upload.base64Data, 'base64'),
+            mimeType: upload.mimeType,
+        };
+    }
+
     async deleteFile(id: string, userId?: string) {
         const upload = await this.uploadModel.findById(id);
         if (!upload) {

@@ -8,6 +8,10 @@ export class SiteSettings {
     @Prop({ default: 'default' })
     key: string; // Unique key for settings (only one document with key 'default')
 
+    // Hero Section
+    @Prop({ default: '' })
+    welcomeImageUrl: string;
+
     // About Section
     @Prop({ default: 'Sobre a Basic Studio' })
     aboutTag: string;
@@ -37,6 +41,33 @@ export class SiteSettings {
     // Founder Info
     @Prop({ default: 'Cris Souza' })
     founderName: string;
+
+    // Courses Section
+    @Prop({ default: 'MASTERCLASS SERIES' })
+    coursesTag: string;
+
+    @Prop({ default: 'Formações de Elite' })
+    coursesTitle: string;
+
+    @Prop({ default: 'DESCUBRA O MODO BASIC' })
+    carouselButtonText: string;
+
+    // Philosophy Section
+    @Prop({ default: 'EXCLUSIVIDADE' })
+    philosophyTitle1: string;
+    @Prop({ default: 'Metodologias únicas desenhadas para elevar o seu padrão profissional ao topo do mercado.' })
+    philosophyDesc1: string;
+
+    @Prop({ default: 'MAESTRIA' })
+    philosophyTitle2: string;
+    @Prop({ default: 'O domínio técnico aliado ao olhar artístico que diferencia uma profissional comum de uma referência.' })
+    philosophyDesc2: string;
+
+    @Prop({ default: 'LEGADO' })
+    philosophyTitle3: string;
+    @Prop({ default: 'Não formamos apenas técnicos, construímos carreiras sólidas e marcas pessoais inesquecíveis.' })
+    philosophyDesc3: string;
+
 }
 
 export const SiteSettingsSchema = SchemaFactory.createForClass(SiteSettings);
