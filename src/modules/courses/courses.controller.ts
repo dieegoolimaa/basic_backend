@@ -35,14 +35,6 @@ export class CoursesController {
         return this.coursesService.findAllAdmin();
     }
 
-    @Get(':id')
-    @ApiOperation({ summary: 'Get course by ID', description: 'Returns detailed information about a specific course' })
-    @ApiResponse({ status: 200, description: 'Course details' })
-    @ApiResponse({ status: 404, description: 'Course not found' })
-    async findById(@Param('id') id: string) {
-        return this.coursesService.findById(id);
-    }
-
     @Post()
     @UseGuards(JwtAuthGuard, AdminGuard)
     @ApiBearerAuth('JWT-auth')
@@ -76,5 +68,13 @@ export class CoursesController {
     @ApiResponse({ status: 404, description: 'Course not found' })
     async delete(@Param('id') id: string) {
         return this.coursesService.delete(id);
+    }
+
+    @Get(':id')
+    @ApiOperation({ summary: 'Get course by ID', description: 'Returns detailed information about a specific course' })
+    @ApiResponse({ status: 200, description: 'Course details' })
+    @ApiResponse({ status: 404, description: 'Course not found' })
+    async findById(@Param('id') id: string) {
+        return this.coursesService.findById(id);
     }
 }

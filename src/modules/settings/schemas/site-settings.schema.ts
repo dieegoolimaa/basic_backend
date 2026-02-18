@@ -67,7 +67,14 @@ export class SiteSettings {
     philosophyTitle3: string;
     @Prop({ default: 'Não formamos apenas técnicos, construímos carreiras sólidas e marcas pessoais inesquecíveis.' })
     philosophyDesc3: string;
+    @Prop({ default: 'MENTORIA' })
+    heroTagLeft: string;
 
+    @Prop({ default: 'CRIS SOUZA' })
+    heroTagRight: string;
+
+    @Prop({ default: 'BEM VINDA' })
+    heroTitle: string;
 }
 
 export const SiteSettingsSchema = SchemaFactory.createForClass(SiteSettings);
